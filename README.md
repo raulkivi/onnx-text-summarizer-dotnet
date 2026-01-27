@@ -62,11 +62,11 @@ dotnet run sample_input.txt
 
    | File Name | Size | Download Link | Description |
    |-----------|------|---------------|-------------|
-   | `encoder_model.onnx` | ~141MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/encoder_model.onnx) | Text encoder model |
-   | `decoder_model_merged.onnx` | ~233MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/decoder_model_merged.onnx) | Text decoder model |
-   | `tokenizer.json` | ~2MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/tokenizer.json) | Tokenizer configuration |
-   | `config.json` | ~1KB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/config.json) | Model configuration |
-   | `spiece.model` | ~792KB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/spiece.model) | SentencePiece model |
+   | `encoder_model.onnx` | ~141MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/encoder_model.onnx) | Text encoder model |
+   | `decoder_model_merged.onnx` | ~233MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/decoder_model_merged.onnx) | Text decoder model |
+   | `tokenizer.json` | ~2MB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/tokenizer.json) | Tokenizer configuration |
+   | `config.json` | ~1KB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/config.json) | Model configuration |
+   | `spiece.model` | ~792KB | [Download](https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/spiece.model) | SentencePiece model |
 
 3. **Alternative: Download using wget/curl** (if available)
    ```bash
@@ -424,7 +424,7 @@ This is a learning-focused project! Feel free to:
 ## 📚 Additional Resources
 
 - [ONNX Runtime Documentation](https://onnxruntime.ai/)
-- [Microsoft.ML.OnnxRuntime NuGet](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/)
+- [Microsoft.ML.OnnxRuntime (NuGet package)](https://www.nuget.org/packages/Microsoft.ML.OnnxRuntime/)
 - [Hugging Face ONNX Models](https://huggingface.co/models?library=onnx)
 - [T5 Paper: "Exploring the Limits of Transfer Learning"](https://arxiv.org/abs/1910.10683)
 
