@@ -1,0 +1,17 @@
+# Normalize line endings for all text files so a mixed OS/editor
+# environment doesn't produce whole-file diffs on every commit.
+* text=auto eol=lf
+
+*.cs   text eol=lf diff=csharp
+*.csproj text eol=lf
+*.sln  text eol=crlf
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+
+# Model artifacts and binaries must never be normalized
+*.onnx binary
+*.model binary
+*.dll binary
+*.exe binary
+*.pdb binary

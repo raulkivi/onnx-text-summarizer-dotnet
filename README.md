@@ -1,6 +1,13 @@
 # ONNX Text Summarizer for .NET
 
-A modern .NET Core application that demonstrates **how to use ONNX models** for AI-powered text summarization. Perfect for developers learning to integrate machine learning models into .NET applications.
+[![CI](https://github.com/raulkivi/onnx-text-summarizer-dotnet/actions/workflows/ci.yml/badge.svg)](https://github.com/raulkivi/onnx-text-summarizer-dotnet/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+A modern .NET Core application that demonstrates **how to integrate ONNX models** into a text summarization pipeline. Perfect for developers learning to work with machine learning models in .NET applications.
+
+> **Status:** the extractive (word-frequency) summarizer is fully functional. The ONNX/T5 neural
+> generation path loads the encoder/decoder models but does not yet run inference through them —
+> see [Current Limitations](#-current-limitations) before relying on it for real AI-generated summaries.
 
 ## 🎯 What You'll Learn
 
@@ -12,14 +19,14 @@ A modern .NET Core application that demonstrates **how to use ONNX models** for 
 
 ## ✨ Features
 
-- **ONNX Neural Summarization**: Uses pre-trained T5 model for high-quality abstractive summarization
-- **Extractive Fallback**: Traditional word frequency analysis with position bias and keyword detection  
-- **Automatic Model Detection**: Switches between ONNX and extractive based on model availability
+- **Extractive Summarization**: Word frequency analysis with position bias and keyword detection (fully implemented)
+- **ONNX Model Loading**: Loads a pre-trained T5 encoder/decoder for future neural summarization (inference not yet implemented — see [Current Limitations](#-current-limitations))
+- **Automatic Model Detection**: Switches between the two code paths based on model file availability
 - Outputs summary to `summary.txt`
 
 ## 📋 Requirements
 
-- **.NET 9.0** or later ([Download here](https://dotnet.microsoft.com/download))
+- **.NET 10.0** or later ([Download here](https://dotnet.microsoft.com/download))
 - **Python 3.7+** (for the model finder utility)
 - **4GB+ RAM** (recommended for ONNX models)
 - **1GB+ free disk space** (for model downloads)
@@ -154,9 +161,12 @@ Try these alternatives:
    copy models-temp/*.* models/
 ```
 
-**❌ Problem: Application falls back to extractive summarization**
+**❌ Problem: Output is always the extractive summary, even with model files present**
 ```
-This means ONNX models weren't loaded. Check:
+This is expected today: neural generation isn't implemented yet, so the app always produces
+an extractive summary (see Current Limitations below). If you're instead seeing
+"ONNX models not found, using extractive summarization..." when you expect the models to be
+picked up, check:
 1. All model files exist in models/ folder
 2. File sizes match expected values
 3. No file corruption (try re-downloading)
@@ -180,10 +190,35 @@ This project uses the **T5 (Text-To-Text Transfer Transformer)** model fine-tune
 | `spiece.model` | Tokenization | ~792KB | SentencePiece tokenizer model |
 
 ### How It Works
+This is the target pipeline the code is structured around — see [Current Limitations](#-current-limitations)
+for what's actually implemented today.
 1. **Input Text** → Tokenizer converts text to numbers
 2. **Encoder** → Understands the meaning and context
 3. **Decoder** → Generates a concise summary
 4. **Output** → Summary is converted back to readable text
+
+## ⚠️ Current Limitations
+
+- **Neural generation isn't implemented yet.** `ONNXTextSummarizer` loads the T5 encoder and
+  decoder sessions and validates that the model files are readable, but `SummarizeText()` does not
+  run a forward pass through them. It currently returns the extractive summary, clearly labeled
+  `[Extractive fallback — ONNX neural generation not yet implemented]`, so output is never
+  misattributed to the neural model. Implementing real generation requires:
+  - Proper SentencePiece tokenization of the input (the `spiece.model` file is present but unused)
+  - An encoder forward pass to get contextual embeddings
+  - Autoregressive decoding through `decoder_model_merged.onnx`, including its `use_cache_branch`
+    input and past-key-value handling
+- **Tokenizer vocabulary loading is broken for this model's `tokenizer.json`.** T5's SentencePiece
+  unigram vocab is stored as an array of `[token, score]` pairs, but `LoadTokenizer()` assumes an
+  object map and throws during parsing; it's caught and silently replaced with a 3-token
+  placeholder vocabulary. You'll see a `Warning: Could not load tokenizer vocabulary` line on every
+  run with models present.
+- **No automated coverage of the ONNX path.** The `tests/` project covers the extractive
+  summarizer; there is no test exercising `ONNXTextSummarizer` (partly because the 375MB+ model
+  files aren't checked into the repo, so CI can't load them).
+
+Contributions implementing real ONNX inference are very welcome — see
+[Contributing & Learning](#-contributing--learning).
 
 ## 💡 Code Architecture
 
@@ -203,8 +238,8 @@ string summary = onnxSummarizer.SummarizeText(inputText);
 
 ### Required NuGet Packages
 ```xml
-<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
-<PackageReference Include="Microsoft.ML.Tokenizers" Version="1.0.2" />
+<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0" />
+<PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
 ```
 
 ## 🔍 Finding More ONNX Models
@@ -245,7 +280,7 @@ This tool helps you:
    ```bash
    # Verify .NET is installed
    dotnet --version
-   # Should show 9.0.x or later
+   # Should show 10.0.x or later
    ```
 
 2. **Clone and Navigate**
@@ -290,15 +325,19 @@ dotnet run article.txt
 type summary.txt
 ```
 
-**Expected Output:**
+**Expected Output (with model files present):**
 ```
-✅ ONNX model found. Using neural summarization.
-📄 Processing: article.txt
-🧠 Generating AI summary...
-✅ Summary saved to: summary.txt
+Processing file: article.txt
+ONNX model files found; loading (neural generation is not yet implemented — see README)...
+ONNX models loaded successfully!
+Summary generated successfully!
+Summary saved to: summary.txt
+```
 
-Summary: "Artificial intelligence is transforming industries worldwide with sophisticated machine learning algorithms. Companies invest billions in AI research for applications in healthcare, finance, education, and transportation. Ethical considerations remain crucial for responsible AI innovation."
-```
+`summary.txt` will contain an extractive summary prefixed with
+`[Extractive fallback — ONNX neural generation not yet implemented]`, since the encoder/decoder
+models are loaded but not yet run for generation (see [Current Limitations](#-current-limitations)).
+Without the model files present, the prefix and the "ONNX model files found" line are skipped entirely.
 
 ## 🔧 How It Works (Technical Details)
 
@@ -361,8 +400,8 @@ To use a different ONNX model:
 
 1. **Add NuGet Packages**
    ```xml
-   <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.22.1" />
-   <PackageReference Include="Microsoft.ML.Tokenizers" Version="1.0.2" />
+   <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0" />
+   <PackageReference Include="Microsoft.ML.Tokenizers" Version="2.0.0" />
    ```
 
 2. **Copy Core Classes**

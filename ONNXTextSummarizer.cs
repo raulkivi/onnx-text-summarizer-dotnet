@@ -87,24 +87,20 @@ namespace TextSummarizer
             _reverseVocab[UNK_TOKEN_ID] = "<unk>";
         }
 
+        // NOTE: The encoder/decoder sessions are loaded and validated above, but this
+        // method does not yet run inference through them. A correct implementation needs
+        // SentencePiece tokenization, an encoder forward pass, and autoregressive decoder
+        // generation (with cache handling for decoder_model_merged.onnx). Until that lands,
+        // this deliberately falls back to the extractive summarizer rather than fabricate
+        // output attributed to the neural model. Tracked as a follow-up; see README.
         public string SummarizeText(string text, int maxLength = 150)
         {
             try
             {
-                // For demonstration, we'll use a simplified approach
-                // In a full implementation, you would:
-                // 1. Properly tokenize the input text using SentencePiece
-                // 2. Run the encoder to get contextual embeddings
-                // 3. Use the decoder with beam search to generate summary
-                // 4. Decode the generated tokens back to text
-
-                Console.WriteLine("Running ONNX-based summarization...");
-                
-                // For now, return a message indicating ONNX model is loaded but needs full implementation
                 var fallbackSummarizer = new TextSummarizer(3);
                 string fallbackSummary = fallbackSummarizer.SummarizeText(text);
-                
-                return $"[ONNX Model Loaded] {fallbackSummary}";
+
+                return $"[Extractive fallback — ONNX neural generation not yet implemented] {fallbackSummary}";
             }
             catch (Exception ex)
             {

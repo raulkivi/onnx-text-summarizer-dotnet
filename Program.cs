@@ -48,7 +48,7 @@ namespace TextSummarizer
                     File.Exists(Path.Combine(modelsPath, "encoder_model.onnx")) &&
                     File.Exists(Path.Combine(modelsPath, "decoder_model_merged.onnx")))
                 {
-                    Console.WriteLine("Using ONNX neural summarization model...");
+                    Console.WriteLine("ONNX model files found; loading (neural generation is not yet implemented — see README)...");
                     try
                     {
                         using (var onnxSummarizer = new ONNXTextSummarizer(modelsPath))
