@@ -7,7 +7,11 @@ A modern .NET Core application that demonstrates **how to integrate ONNX models*
 
 > **Status:** the extractive (word-frequency) summarizer is fully functional. The ONNX/T5 neural
 > generation path loads the encoder/decoder models but does not yet run inference through them —
-> see [Current Limitations](#-current-limitations) before relying on it for real AI-generated summaries.
+> see [Current Limitations](#current-limitations) before relying on it for real AI-generated summaries.
+
+![Quick start demo: dotnet build, dotnet run sample_input.txt, then cat summary.txt](docs/images/quickstart-demo.gif)
+
+*Simulated terminal session illustrating the exact console output the app produces for `dotnet build` → `dotnet run sample_input.txt` → `cat summary.txt`.*
 
 ## 🎯 What You'll Learn
 
@@ -20,7 +24,7 @@ A modern .NET Core application that demonstrates **how to integrate ONNX models*
 ## ✨ Features
 
 - **Extractive Summarization**: Word frequency analysis with position bias and keyword detection (fully implemented)
-- **ONNX Model Loading**: Loads a pre-trained T5 encoder/decoder for future neural summarization (inference not yet implemented — see [Current Limitations](#-current-limitations))
+- **ONNX Model Loading**: Loads a pre-trained T5 encoder/decoder for future neural summarization (inference not yet implemented — see [Current Limitations](#current-limitations))
 - **Automatic Model Detection**: Switches between the two code paths based on model file availability
 - Outputs summary to `summary.txt`
 
@@ -78,11 +82,11 @@ dotnet run sample_input.txt
 3. **Alternative: Download using wget/curl** (if available)
    ```bash
    # Windows (using curl)
-   curl -L -o encoder_model.onnx "https://huggingface.co/Falconsai/text_summarization/resolve/main/encoder_model.onnx"
-   curl -L -o decoder_model_merged.onnx "https://huggingface.co/Falconsai/text_summarization/resolve/main/decoder_model_merged.onnx"
-   curl -L -o tokenizer.json "https://huggingface.co/Falconsai/text_summarization/resolve/main/tokenizer.json"
-   curl -L -o config.json "https://huggingface.co/Falconsai/text_summarization/resolve/main/config.json"
-   curl -L -o spiece.model "https://huggingface.co/Falconsai/text_summarization/resolve/main/spiece.model"
+   curl -L -o encoder_model.onnx "https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/encoder_model.onnx"
+   curl -L -o decoder_model_merged.onnx "https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/decoder_model_merged.onnx"
+   curl -L -o tokenizer.json "https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/tokenizer.json"
+   curl -L -o config.json "https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/config.json"
+   curl -L -o spiece.model "https://huggingface.co/Falconsai/text_summarization/resolve/main/onnx/spiece.model"
    ```
 
 4. **Verify your folder structure**
@@ -98,6 +102,8 @@ dotnet run sample_input.txt
    ├── TextSummarizer.cs
    └── ...
    ```
+
+   ![models/ folder listing showing all 5 required files](docs/images/models-folder-structure.png)
 
 5. **Navigate back to project root**
    ```bash
@@ -190,14 +196,15 @@ This project uses the **T5 (Text-To-Text Transfer Transformer)** model fine-tune
 | `spiece.model` | Tokenization | ~792KB | SentencePiece tokenizer model |
 
 ### How It Works
-This is the target pipeline the code is structured around — see [Current Limitations](#-current-limitations)
+This is the target pipeline the code is structured around — see [Current Limitations](#current-limitations)
 for what's actually implemented today.
 1. **Input Text** → Tokenizer converts text to numbers
 2. **Encoder** → Understands the meaning and context
 3. **Decoder** → Generates a concise summary
 4. **Output** → Summary is converted back to readable text
 
-## ⚠️ Current Limitations
+<a id="current-limitations"></a>
+## &#9888;&#65039; Current Limitations
 
 - **Neural generation isn't implemented yet.** `ONNXTextSummarizer` loads the T5 encoder and
   decoder sessions and validates that the model files are readable, but `SummarizeText()` does not
@@ -219,6 +226,17 @@ for what's actually implemented today.
 
 Contributions implementing real ONNX inference are very welcome — see
 [Contributing & Learning](#-contributing--learning).
+
+## 🧪 Running Tests
+
+The extractive summarizer is covered by an xUnit test project under `tests/TextSummarizer.Tests`,
+which also runs in CI on every push and pull request to `main`.
+
+```bash
+dotnet test onnx.sln
+```
+
+![dotnet test output showing 5 passing tests](docs/images/tests-passing.png)
 
 ## 💡 Code Architecture
 
@@ -336,7 +354,7 @@ Summary saved to: summary.txt
 
 `summary.txt` will contain an extractive summary prefixed with
 `[Extractive fallback — ONNX neural generation not yet implemented]`, since the encoder/decoder
-models are loaded but not yet run for generation (see [Current Limitations](#-current-limitations)).
+models are loaded but not yet run for generation (see [Current Limitations](#current-limitations)).
 Without the model files present, the prefix and the "ONNX model files found" line are skipped entirely.
 
 ## 🔧 How It Works (Technical Details)
