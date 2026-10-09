@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- README no longer promises an automatic model download or AI-generated summaries; only the extractive summarizer runs.
+
 ### Changed
 - Retargeted from `net9.0` (out of support) to `net10.0` (current LTS).
 - Upgraded `Microsoft.ML.OnnxRuntime` 1.22.1 → 1.29.0 and `Microsoft.ML.Tokenizers` 1.0.2 → 2.0.0.

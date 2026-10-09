@@ -7,7 +7,7 @@ A modern .NET Core application that demonstrates **how to integrate ONNX models*
 
 > **Status:** the extractive (word-frequency) summarizer is fully functional. The ONNX/T5 neural
 > generation path loads the encoder/decoder models but does not yet run inference through them —
-> see [Current Limitations](#current-limitations) before relying on it for real AI-generated summaries.
+> see [Current Limitations](#current-limitations) before relying on it for neural summaries.
 
 ![Quick start demo: dotnet build, dotnet run sample_input.txt, then cat summary.txt](docs/images/quickstart-demo.gif)
 
@@ -48,16 +48,7 @@ dotnet restore
 ```
 
 ### Step 2: Download ONNX Models (First Time Only)
-The application needs AI models to work. You have two options:
-
-**Option A: Automatic Download (Recommended)**
-```bash
-# The models will be downloaded automatically on first run
-dotnet build
-dotnet run sample_input.txt
-```
-
-**Option B: Manual Model Setup**
+The extractive summarizer needs no models. The ONNX files are only loaded (inference is not implemented yet), and **nothing is downloaded automatically**; fetch them manually:
 
 #### Step-by-Step Download Instructions
 
@@ -117,7 +108,7 @@ dotnet run sample_input.txt
 # Test with the included sample
 dotnet run sample_input.txt
 
-# View the AI-generated summary
+# View the summary
 type summary.txt
 ```
 
@@ -317,9 +308,9 @@ This tool helps you:
    dotnet build
    ```
 
-5. **First Run (Downloads Models)**
+5. **First Run**
    ```bash
-   # This will automatically download ONNX models on first run
+   # Uses the extractive summarizer; model files are not downloaded for you
    dotnet run sample_input.txt
    ```
 
@@ -339,7 +330,7 @@ echo "Artificial intelligence is transforming industries worldwide. Machine lear
 # Summarize with ONNX AI model
 dotnet run article.txt
 
-# View the AI-generated summary
+# View the summary
 type summary.txt
 ```
 
