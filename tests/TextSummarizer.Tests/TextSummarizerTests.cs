@@ -1,3 +1,4 @@
+using FsCheck.Xunit;
 using Xunit;
 
 namespace TextSummarizer.Tests
@@ -6,6 +7,13 @@ namespace TextSummarizer.Tests
 
     public class TextSummarizerTests
     {
+        [Property(MaxTest = 100)]
+        public bool SummarizeText_ArbitraryInput_DoesNotThrow(string text)
+        {
+            _ = new TextSummarizer().SummarizeText(text);
+            return true;
+        }
+
         [Fact]
         public void SummarizeText_EmptyInput_ReturnsEmptyString()
         {
