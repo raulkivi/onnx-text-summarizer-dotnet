@@ -15,3 +15,6 @@
 *.dll binary
 *.exe binary
 *.pdb binary
+
+TextSummarizer.cs -text
+onnx_model_finder.py -text
